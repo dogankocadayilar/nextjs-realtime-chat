@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     // Check if the user already added
     const isAlreadyAdded = (await fetchRedis(
       "sismember",
-      `user:${idToAdd}:incomming_friend_requests`,
+      `user:${idToAdd}:incoming_friend_requests`,
       session.user.id
     )) as 0 | 1;
 
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     }
 
     // valid request, send friend request
-    db.sadd(`user:${idToAdd}:incoming_friend_request`, session.user.id);
+    db.sadd(`user:${idToAdd}:incoming_friend_requests`, session.user.id);
     return new Response("OK");
   } catch (error) {
     if (error instanceof z.ZodError) {
