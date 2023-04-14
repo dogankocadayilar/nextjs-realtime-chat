@@ -8,8 +8,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-interface Props {}
-
 type FormData = z.infer<typeof addFriendValidator>;
 
 function AddFriendButton({}: Props) {
