@@ -1,16 +1,29 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { Message } from "@/lib/validations/message";
+import { format } from "date-fns";
+import Image from "next/image";
 import { useRef, useState } from "react";
 
 interface Props {
   initialMessages: Message[];
   sessionId: string;
+  sessionImg: string | null | undefined;
+  chatPartner: User;
 }
 
-function Messages({ initialMessages, sessionId }: Props) {
+function Messages({
+  initialMessages,
+  sessionId,
+  sessionImg,
+  chatPartner,
+}: Props) {
   const scrollDownRef = useRef<HTMLDivElement | null>(null);
   const [messages, setMessages] = useState<Message[]>(initialMessages);
+
+  function formatTimestamp(timestamp: number) {
+    return format(timestamp, "HH:mm");
+  }
 
   return (
     <div
@@ -19,7 +32,7 @@ function Messages({ initialMessages, sessionId }: Props) {
     >
       <div ref={scrollDownRef} />
       {messages.map((message, index) => {
-        const isCurrentUser = message.id === sessionId;
+        const isCurrentUser = message.senderId === sessionId;
         const hasNextMessageFromSameUser =
           messages[index - 1]?.senderId === messages[index].senderId;
         return (
@@ -51,9 +64,27 @@ function Messages({ initialMessages, sessionId }: Props) {
                 >
                   {message.text}{" "}
                   <span className="ml-2 text-xs text-gray-400">
-                    {message.timestamp}
+                    {formatTimestamp(message.timestamp)}
                   </span>
                 </span>
+              </div>
+
+              <div
+                className={cn("relative w-8 h-8", {
+                  "order-2": isCurrentUser,
+                  "order-1": !isCurrentUser,
+                  invisible: hasNextMessageFromSameUser,
+                })}
+              >
+                <Image
+                  fill
+                  src={
+                    isCurrentUser ? (sessionImg as string) : chatPartner.image
+                  }
+                  alt="Profile Picture"
+                  referrerPolicy="no-referrer"
+                  className="rounded-full"
+                />
               </div>
             </div>
           </div>
