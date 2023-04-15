@@ -22,7 +22,7 @@ function UnseenChatToast({
   return (
     <div
       className={cn(
-        "max-w-medium w-full bg-white rounded-lg shadow-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5",
+        " max-w-screen-md w-full bg-white rounded-lg shadow-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5",
         { "animate-enter": t.visible, "animate-leave": !t.visible }
       )}
     >

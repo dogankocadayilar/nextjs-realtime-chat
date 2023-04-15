@@ -35,7 +35,7 @@ function FriendRequestsSidebarOption({
       );
       pusherClient.unbind("incoming_friend_requests", friendRequesHandler);
     };
-  }, []);
+  }, [sessionId]);
 
   return (
     <Link
