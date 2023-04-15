@@ -1,11 +1,19 @@
 "use client";
-import { chatHrefConstructor } from "@/lib/utils";
+import { pusherClient } from "@/lib/pusher";
+import { chatHrefConstructor, toPusherKey } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
+import UnseenChatToast from "./UnseenChatToast";
 
 interface Props {
   friends: User[];
   sessionId: string;
+}
+
+interface ExtendedMessage extends Message {
+  senderImg: string;
+  senderName: string;
 }
 
 function SidebarChatList({ friends, sessionId }: Props) {
@@ -14,12 +22,54 @@ function SidebarChatList({ friends, sessionId }: Props) {
   const [unseenMessages, setUnseenMessages] = useState<Message[]>([]);
 
   useEffect(() => {
+    pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`));
+    pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`));
+
+    function friendHandler() {
+      router.refresh();
+    }
+
+    function chatHandler(message: ExtendedMessage) {
+      const shouldNotify =
+        pathname !==
+        `/dashboard/chat/${chatHrefConstructor(sessionId, message.senderId)}`;
+
+      console.log(shouldNotify);
+
+      if (!shouldNotify) return;
+
+      // Should notify the user
+      toast.custom((t) => (
+        // Custom component
+        <UnseenChatToast
+          t={t}
+          sessionId={sessionId}
+          senderId={message.senderId}
+          senderImg={message.senderImg}
+          senderMessage={message.text}
+          senderName={message.senderName}
+        />
+      ));
+      setUnseenMessages((prev) => [...prev, message]);
+    }
+
+    pusherClient.bind("new_message", chatHandler);
+    pusherClient.bind("new_friend", friendHandler);
+
+    return () => {
+      pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:chats`));
+      pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:friends`));
+    };
+  }, []);
+
+  useEffect(() => {
     if (pathname?.includes("chat")) {
       setUnseenMessages((prevState) => {
         return prevState.filter((msg) => !pathname.includes(msg.senderId));
       });
     }
   }, [pathname]);
+
   return (
     <ul role="list" className="max-h-[25rem] overflow-y-auto -mx-2 space-y-1">
       {friends.sort().map((friend) => {

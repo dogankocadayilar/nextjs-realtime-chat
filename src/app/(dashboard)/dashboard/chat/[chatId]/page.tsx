@@ -81,6 +81,7 @@ async function page({ params }: PageProps) {
         initialMessages={initialMessages}
         chatPartner={chatPartner}
         sessionImg={user.image}
+        chatId={chatId}
       />
       <ChatInput chatPartner={chatPartner} chatId={chatId} />
     </div>

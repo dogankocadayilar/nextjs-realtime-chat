@@ -15,6 +15,7 @@ function ChatInput({ chatPartner, chatId }: Props) {
   const [input, setInput] = useState<string>("");
 
   async function sendMessage() {
+    if (!input) return;
     setLoading(true);
 
     try {

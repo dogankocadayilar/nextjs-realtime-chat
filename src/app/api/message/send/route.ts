@@ -1,6 +1,8 @@
 import { fetchRedis } from "@/helpers/redis";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { pusherServer } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 import { Message, messageValidator } from "@/lib/validations/message";
 import { nanoid } from "nanoid";
 import { getServerSession } from "next-auth";
@@ -50,6 +52,20 @@ export async function POST(req: Request) {
     };
 
     const message = messageValidator.parse(messageData);
+
+    // Notify all connected chat room clients
+
+    pusherServer.trigger(
+      toPusherKey(`chat:${chatId}`),
+      "incoming_message",
+      message
+    );
+
+    pusherServer.trigger(toPusherKey(`user:${friendId}:chats`), "new_message", {
+      ...message,
+      senderImg: parseSender.image,
+      senderName: parseSender.name,
+    });
 
     // All valid sen the message
     await db.zadd(`chat:${chatId}:messages`, {
