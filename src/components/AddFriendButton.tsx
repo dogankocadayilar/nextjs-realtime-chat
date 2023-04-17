@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 type FormData = z.infer<typeof addFriendValidator>;
 
-function AddFriendButton({}: Props) {
+function AddFriendButton({}) {
   const [showSuccessState, setShowSuccessState] = useState<boolean>(false);
 
   const {
@@ -66,7 +66,7 @@ function AddFriendButton({}: Props) {
       </div>
       <p className="mt-1 text-sm text-red-600">{errors.email?.message}</p>
       {showSuccessState && (
-        <p className="mt-1 text-sm text-green-600">friend request sent!</p>
+        <p className="mt-1 text-sm text-green-600">Friend request sent!</p>
       )}
     </form>
   );
