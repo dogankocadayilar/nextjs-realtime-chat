@@ -3,6 +3,7 @@
 A project to learn modern full-stack development. 
 
 Pusher can be delayed one or two requests because of Vercel Hobby.
+
 [Production Link](https://nextjs-realtime-chat-6srspzhez-dogankocadayilar.vercel.app/)
 
 ## Tech Stack
