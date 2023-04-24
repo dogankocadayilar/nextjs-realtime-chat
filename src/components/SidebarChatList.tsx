@@ -20,13 +20,14 @@ function SidebarChatList({ friends, sessionId }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const [unseenMessages, setUnseenMessages] = useState<Message[]>([]);
+  const [activeChats, setActiveChats] = useState<User[]>(friends);
 
   useEffect(() => {
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`));
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`));
 
-    function friendHandler() {
-      router.refresh();
+    function newFriendHandler(newFriend: User) {
+      setActiveChats((prev) => [...prev, newFriend]);
     }
 
     function chatHandler(message: ExtendedMessage) {
@@ -54,14 +55,14 @@ function SidebarChatList({ friends, sessionId }: Props) {
     }
 
     pusherClient.bind("new_message", chatHandler);
-    pusherClient.bind("new_friend", friendHandler);
+    pusherClient.bind("new_friend", newFriendHandler);
 
     return () => {
       pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:chats`));
       pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:friends`));
 
       pusherClient.unbind("new_message", chatHandler);
-      pusherClient.unbind("new_friend", friendHandler);
+      pusherClient.unbind("new_friend", newFriendHandler);
     };
   }, [pathname, sessionId, router]);
 
@@ -75,7 +76,7 @@ function SidebarChatList({ friends, sessionId }: Props) {
 
   return (
     <ul role="list" className="max-h-[25rem] overflow-y-auto -mx-2 space-y-1">
-      {friends.sort().map((friend) => {
+      {activeChats.sort().map((friend) => {
         const unseenMessagesCount = unseenMessages.filter((unseenMessage) => {
           return (unseenMessage.senderId = friend.id);
         }).length;

@@ -11,6 +11,7 @@ import { notFound } from "next/navigation";
 
 async function page({}) {
   const session = await getServerSession(authOptions);
+
   if (!session) notFound();
 
   const friends = await getFriendsByUserId(session.user.id);
