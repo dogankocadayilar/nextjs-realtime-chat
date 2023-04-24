@@ -12,7 +12,7 @@ Pusher can be delayed one or two requests because of Vercel Hobby.
 - TailwindCSS
 - Next.js
 - Redis
-- [Web Socket (Pusher)](https://pusher.com/)
+- [Realtime Feature (Pusher)](https://pusher.com/)
 - [Database (Redis)](https://upstash.com/)
 
 ## Features
